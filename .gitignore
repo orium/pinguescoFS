@@ -1,0 +1,13 @@
+/stamp-h1
+/Makefile
+/autom4te.cache/
+/config.h
+/config.log
+/config.status
+/formatter/.deps/
+/formatter/Makefile
+/src/.deps/
+/src/Makefile
+/src/pinguescofs
+
+*.o

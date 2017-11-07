@@ -1,0 +1,73 @@
+AC_INIT([pinguescofs], [0.1.1])
+AC_CONFIG_AUX_DIR(config)
+
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE([1.9 foreign])
+
+AC_LANG_C
+AC_PROG_CC
+AC_ISC_POSIX
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS([stdint.h stdlib.h string.h sys/sysinfo.h libgen.h \
+                  pthread.h search.h])
+AC_HEADER_STDBOOL
+
+AC_C_CONST
+AC_TYPE_UID_T
+AC_C_INLINE
+AC_TYPE_MODE_T
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
+AC_STRUCT_ST_BLOCKS
+AC_TYPE_UINT32_T
+
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([memset strdup strtol tdestroy])
+dnl Set stuff in config.h
+
+dnl Get the prefix
+if test "x${prefix}" = "xNONE"; then
+  PREFIX="${ac_default_prefix}"
+  AC_DEFINE_UNQUOTED(PREFIX, "${ac_default_prefix}", [definition of PREFIX])
+else
+  PREFIX="${prefix}"
+  AC_DEFINE_UNQUOTED(PREFIX, "${prefix}", [definition of PREFIX])
+fi
+AC_SUBST(PREFIX)
+
+PKG_CHECK_MODULES(fuse, fuse)
+
+AC_ARG_WITH(
+	debug,
+	AS_HELP_STRING(
+		[--with-debug], 
+		[Enable additional debugging information (default=no)]),
+	[use_debug=$withval], 
+	[use_debug=no]
+)
+
+if test "$use_debug" = "yes"; then
+  AC_DEFINE(CONFIG_DEBUG, "1", [Additional debugging information])
+fi
+
+DEBUG_FLAGS="-DNDEBUG"
+
+if test "$use_debug" = "yes"; then
+  DEBUG_FLAGS="-DDEBUG -ggdb -O0"
+  
+  echo 	""
+  echo	"DEBUG ENABLED!"
+  echo 	""
+fi
+
+CFLAGS="-Wall -std=gnu99 -O2 $DEBUG_FLAGS `$PKG_CONFIG --cflags fuse 2> /dev/null`"
+
+LDFLAGS="-lm -lpthread `$PKG_CONFIG --libs fuse 2>/dev/null`"
+
+AC_OUTPUT([
+Makefile
+src/Makefile
+formatter/Makefile
+])

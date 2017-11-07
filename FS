@@ -1,0 +1,36 @@
+Super Block
+  position: 0
+  content:
+    - magic number         (4 bytes) - 0xbadebabe
+    - free block list head (4 bytes)
+    - number of blocks     (4 bytes)
+    - number of inodes     (4 bytes)
+
+File Allocation Table
+  position: 1 .. 16384
+  content:
+    - next pointers in the free list
+
+Directory entry structure
+  position: arbitrary
+  content:
+    - nul terminated name (64 bytes), inode number (4 bytes) (15 times)
+    - next pointer (4 bytes)
+    Note: An unused entry will have a name starting by nul
+
+Inode structure
+  position: arbitrary
+  content:
+    - type (1 byte)
+    - dentry block (if the inode is a directory) (4 bytes)
+    - number of blocks of the file (including inode) (4 bytes)
+    - size (if the inode is a file) (4 bytes)
+    - single indirect block (if the inode is a file) (4 bytes)
+    - double indirect block (if the inode is a file) (4 bytes)
+    - triple indirect block (if the inode is a file) (4 bytes)
+
+Indirect block structure
+    - block (4 bytes) (256 times)
+
+Root inode
+  position: 16385
